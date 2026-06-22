@@ -2,7 +2,9 @@
 
 ## Overview
 
-Personal Task Manager is a full-stack task management application built using FastAPI, SQLite, and Streamlit.
+Personal Task Manager is a full-stack task management application developed using FastAPI, SQLite, and Streamlit. The application helps users efficiently organize and manage their daily tasks through a simple and interactive interface. It provides secure user authentication, allowing users to register, log in, and access their personal task data. Users can create, view, update, and delete tasks while maintaining important details such as title, description, priority, due date, and status.
+
+The project demonstrates complete CRUD operations, REST API development, database management, and frontend-backend integration. It also includes features such as task filtering, status updates, and a dashboard that displays task statistics including total, pending, in-progress, and completed tasks. Built using modern Python technologies, this project showcases practical skills in software development, API design, data management, and version control using Git and GitHub.
 
 Users can:
 
