@@ -99,6 +99,13 @@ def register_page():
         if not email or not password:
             st.error("All fields are required")
             return
+        if "@" not in email or "." not in email:
+                        st.error("Enter a valid email address (example: user@gmail.com) ")
+                        return
+
+        if len(password) < 6:
+                        st.error("Password must contain at least 6 characters")
+                        return
 
         response = api_call(
             "POST",
@@ -365,9 +372,26 @@ def dashboard_page():
         st.rerun()
 
     if st.sidebar.button("Logout"):
-        st.session_state.clear()
-        st.session_state.page = "login"
-        st.rerun()
+                    st.session_state.confirm_logout = True
+
+    if st.session_state.get("confirm_logout", False):
+
+                st.sidebar.warning(
+                                    "Are you sure you want to logout?"
+                                    )
+
+                if st.sidebar.button(
+                                        "Yes, Logout"
+                                    ):
+                        st.session_state.clear()
+                        st.session_state.page = "login"
+                        st.rerun()
+
+                if st.sidebar.button(
+                                        "Cancel Logout"
+                                    ):
+                        st.session_state.confirm_logout = False
+                        st.rerun()
 
     token = st.session_state.token
 
