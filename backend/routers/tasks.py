@@ -55,7 +55,7 @@ def create_task(task: TaskCreate, token: str):
         task.title,
         task.description,
         task.priority,
-        "pending",
+        task.status,
         task.due_date,
         email
     )

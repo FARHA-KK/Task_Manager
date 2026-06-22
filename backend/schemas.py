@@ -15,6 +15,7 @@ class TaskCreate(BaseModel):
     title: str
     description: str
     priority: str
+    status:str
     due_date: str | None = None
 class TaskStatusUpdate(BaseModel):
     status:str    
