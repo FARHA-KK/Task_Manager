@@ -305,7 +305,7 @@ def add_task_page():
 
         if submit:
 
-            if not title:
+            if not title.strip():
                 st.error("Title is required")
                 return
 
@@ -359,15 +359,18 @@ def view_task_page():
 
     task = response.json()
 
-    st.write("### Title")
-    st.write(task["title"])
+    st.subheader("Task Information")
 
-    st.write("### Description")
-    st.write(task["description"])
+    st.write(f"**Task ID:** {task['id']}")
 
-    st.write("### Priority")
-    st.write(task["priority"])
+    st.write(f"**Title:** {task['title']}")
 
+    st.write(f"**Description:** {task['description']}")
+
+    st.write(f"**Priority:** {task['priority']}")
+
+    st.write(f"**Due Date:** {task['due_date']}")
+    st.divider()
     st.write("### Status")
 
     if task["status"] == "done":
@@ -379,8 +382,7 @@ def view_task_page():
     else:
             st.info("Pending")
             
-    st.write("### Due Date")
-    st.write(task["due_date"])
+    
 
     col1, col2, col3 = st.columns(3)
 
@@ -574,14 +576,19 @@ def dashboard_page():
 
             df = pd.DataFrame(tasks)
 
-            if "owner_email" in df.columns:
-                df = df.drop(
-                    columns=["owner_email"]
-                )
+            df = df[
+                        [
+                            "title",
+                            "priority",
+                            "status"
+                        ]
+                    ]
+
+            df.index = range(1, len(df) + 1)
 
             st.dataframe(
                             df,
-                            width="stretch"
+                             width="stretch"
                         )
 
             st.subheader("Task Actions")
