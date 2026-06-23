@@ -27,6 +27,12 @@ def register(user: UserRegister):
     if existing_user:
         conn.close()
         raise HTTPException(status_code=400, detail="Email already exists")
+    if len(user.password.strip()) < 6:
+        conn.close()
+        raise HTTPException(
+        status_code=400,
+        detail="Password must contain at least 6 characters"
+    )
 
     
     hashed_password = hash_password(user.password)

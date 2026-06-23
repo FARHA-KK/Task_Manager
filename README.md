@@ -2,22 +2,9 @@
 
 ## Overview
 
-Personal Task Manager is a full-stack task management application developed using FastAPI, SQLite, and Streamlit. The application helps users efficiently organize and manage their daily tasks through a simple and interactive interface. It provides secure user authentication, allowing users to register, log in, and access their personal task data. Users can create, view, update, and delete tasks while maintaining important details such as title, description, priority, due date, and status.
+Personal Task Manager is a full-stack task management application developed using FastAPI, SQLite, and Streamlit. The application enables users to securely manage their daily tasks through an intuitive and user-friendly interface.
 
-The project demonstrates complete CRUD operations, REST API development, database management, and frontend-backend integration. It also includes features such as task filtering, status updates, and a dashboard that displays task statistics including total, pending, in-progress, and completed tasks. Built using modern Python technologies, this project showcases practical skills in software development, API design, data management, and version control using Git and GitHub.
-
-Users can:
-
-* Register and Login
-* Create Tasks
-* View Tasks
-* Update Tasks
-* Delete Tasks
-* Change Task Status
-* Filter Tasks
-* View Task Summary Dashboard
-
-This project demonstrates complete CRUD operations, authentication, API integration, and frontend development using Streamlit.
+Users can register, log in, create tasks, update task details, track progress, manage priorities, and monitor task completion through a dashboard. The project demonstrates full-stack development concepts including authentication, CRUD operations, API integration, database management, and frontend-backend communication.
 
 ---
 
@@ -27,149 +14,183 @@ This project demonstrates complete CRUD operations, authentication, API integrat
 
 * User Registration
 * User Login
-* Session Token Management
-* Logout
+* Session-Based Authentication
+* Logout with Confirmation
+* Email and Password Validation
 
 ### Task Management
 
-* Create Task
+* Create New Tasks
 * View All Tasks
-* View Task Details
-* Update Task
-* Delete Task
-* Mark Task as Done
-* Change Task Status (Pending, In Progress, Done)
+* View Individual Task Details
+* Update Existing Tasks
+* Delete Tasks with Confirmation
+* Change Task Status
+* Mark Tasks as Done
+* Set Task Priority
+* Manage Due Dates
 
 ### Dashboard
 
 * Total Tasks Count
 * Pending Tasks Count
 * In Progress Tasks Count
-* Done Tasks Count
-* Filter by Status
-* Filter by Priority
-* Select Task by Name
+* Completed Tasks Count
+* Filter Tasks by Status
+* Filter Tasks by Priority
+* Select Tasks from Dropdown List
 
 ### Additional Features
 
-* Delete Confirmation
-* Error Handling
-* API Connection Validation
 * Task Detail Page
 * Edit Task Page
+* Error Handling
+* API Connection Validation
+* User-Friendly Interface
 
 ---
 
-## Technologies Used
+## Tech Stack
 
-### Backend
-
-* Python
-* FastAPI
-* SQLite
-* Pydantic
-
-### Frontend
-
-* Streamlit
-* Requests
-* Pandas
-
-### Version Control
-
-* Git
-* GitHub
+| Technology   | Purpose                     |
+| ------------ | --------------------------- |
+| Python 3.11+ | Programming Language        |
+| FastAPI      | Backend API Framework       |
+| SQLite       | Database Management         |
+| Streamlit    | Frontend User Interface     |
+| Requests     | API Communication           |
+| Pandas       | Data Processing and Display |
+| Pydantic     | Data Validation             |
+| Git & GitHub | Version Control             |
 
 ---
 
 ## Project Structure
 
-task-manager/
+```text
+task_manager/
+│
 ├── backend/
-│ ├── main.py ← FastAPI app, startup, middleware, error handlers
-│ ├── database.py ← SQLite connection, init_db(), all DB helper functions
-│ ├── auth.py ← password hashing, token generation, get_current_user()
-│ ├── schemas.py ← Pydantic models (TaskCreate, TaskUpdate,
-TaskResponse...)
-│ ├── routers/
-│ │ ├── tasks.py ← all /tasks endpoints
-│ │ └── users.py ← /auth/register, /auth/login, /auth/me
-│ └── .env ← SECRET_KEY (never commit this file)
+│   ├── main.py
+│   ├── database.py
+│   ├── auth.py
+│   ├── schemas.py
+│   └── routers/
+│       └── tasks.py
+│
 ├── frontend/
-│ └── app.py ← entire Streamlit app, all pages
-├── requirements.txt ← all pip packages
+│   └── app.py
+│
+├── requirements.txt
 ├── .gitignore
 └── README.md
+```
 
-## Installation
+---
 
-### Clone Repository
+## Installation and Setup
 
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/FARHA-KK/Task_Manager.git
-
 cd Task_Manager
+```
 
-### Install Dependencies
+### 2. Create a Virtual Environment
 
+#### Windows
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+#### Linux / macOS
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-### Run Backend
+### 4. Configure Environment Variables
 
+Create a `.env` file inside the backend folder:
+
+```env
+SECRET_KEY=your_secret_key
+```
+
+### 5. Run the Backend Server
+
+```bash
+cd backend
 uvicorn main:app --reload
+```
 
-### Run Frontend
+Backend URL:
 
+```text
+http://127.0.0.1:8000
+```
+
+### 6. Run the Frontend Application
+
+Open a new terminal:
+
+```bash
+cd frontend
 streamlit run app.py
+```
+
+Frontend URL:
+
+```text
+http://localhost:8501
+```
 
 ---
 
 ## API Endpoints
 
-### Authentication
-
-POST /auth/register
-
-POST /auth/login
-
-GET /auth/me
-
-### Tasks
-
-POST /tasks
-
-GET /tasks
-
-GET /tasks/{id}
-
-PUT /tasks/{id}
-
-PATCH /tasks/{id}/status
-
-DELETE /tasks/{id}
-
-GET /tasks/summary
+| Method | Endpoint           | Authentication Required | Description                      |
+| ------ | ------------------ | ----------------------- | -------------------------------- |
+| POST   | /auth/register     | No                      | Register a new user              |
+| POST   | /auth/login        | No                      | Authenticate user                |
+| POST   | /tasks/            | Yes                     | Create a task                    |
+| GET    | /tasks/            | Yes                     | Retrieve all tasks               |
+| GET    | /tasks/{id}        | Yes                     | Retrieve a specific task         |
+| PUT    | /tasks/{id}        | Yes                     | Update task details              |
+| PATCH  | /tasks/{id}/status | Yes                     | Update task status               |
+| DELETE | /tasks/{id}        | Yes                     | Delete a task                    |
+| GET    | /tasks/summary     | Yes                     | Retrieve task summary statistics |
 
 ---
+## Future Enhancements
 
-## Future Improvements
-
-* Task Search
-* Due Date Reminders
-* Dark Mode UI
-* User Profile Page
-* Task Categories
+* Task Search Functionality
+* Due Date Notifications
+* Dark Mode Theme
+* Task Categories and Labels
+* User Profile Management
 * Email Notifications
+* Data Export (CSV/PDF)
 
 ---
 
 ## Author
 
-Fathima Farha
+**Fathima Farha**
 
-B.Tech Computer Science and Engineering (CSE) Student
-
+B.Tech Computer Science and Engineering (CSE)
 MEA Engineering College
 
-Passionate about Python, FastAPI, Web Development, and Software Engineering.
+Interested in Full-Stack Development, Python, FastAPI, Streamlit, and Software Engineering.
 
-This project was developed as part of learning full-stack application development using FastAPI, SQLite, Streamlit, Git, and GitHub.
+

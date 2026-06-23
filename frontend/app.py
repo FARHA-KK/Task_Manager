@@ -4,6 +4,74 @@ import requests
 import pandas as pd
 from datetime import datetime
 
+st.markdown("""
+<style>
+
+/* Main Background */
+.stApp {
+    background-color: #F8F5FF;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #F3E8FF;
+}
+
+/* Buttons */
+.stButton > button {
+    background-color: #F9A8D4;
+    color: #4C1D95;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+}
+
+.stButton > button:hover {
+    background-color: #F472B6;
+    color: white;
+}
+
+/* Text Inputs */
+.stTextInput input,
+.stTextArea textarea,
+.stDateInput input {
+    background-color: #FFFFFF;
+    border: 1px solid #E9D5FF;
+    border-radius: 8px;
+}
+
+/* Select Boxes */
+div[data-baseweb="select"] > div {
+    background-color: white;
+    border: 1px solid #E9D5FF;
+}
+
+/* Metric Cards */
+[data-testid="metric-container"] {
+    background-color: white;
+    border: 1px solid #FBCFE8;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Dataframe */
+[data-testid="stDataFrame"] {
+    border-radius: 10px;
+}
+
+/* Success Messages */
+.stSuccess {
+    border-radius: 10px;
+}
+
+/* Warning Messages */
+.stWarning {
+    border-radius: 10px;
+}
+
+</style>
+""", unsafe_allow_html=True)
 API_BASE_URL = "http://127.0.0.1:8000"
 # API HELPER
 # ==========================
@@ -63,6 +131,10 @@ def api_call(method, endpoint, data=None, token=None):
 # ==========================
 # SESSION STATE
 # ==========================
+if "logout_message" not in st.session_state:
+    st.session_state.logout_message = False
+if "success_message" not in st.session_state:
+    st.session_state.success_message = None
 if "page" not in st.session_state:
     st.session_state.page = "login"
 
@@ -77,9 +149,13 @@ if "selected_task_id" not in st.session_state:
        
 if "edit_task" not in st.session_state:
     st.session_state.edit_task = None
+    
 
 if "confirm_delete" not in st.session_state:
     st.session_state.confirm_delete = False
+
+if "confirm_logout" not in st.session_state:
+    st.session_state.confirm_logout = False    
 
 # ==========================
 # REGISTER PAGE
@@ -120,7 +196,8 @@ def register_page():
             return
 
         if response.status_code == 200:
-            st.success("Registration successful")
+            st.session_state.logout_message = False
+            st.session_state.success_message = "🎉 Welcome aboard! Your account has been created successfully."
             st.session_state.page = "login"
             st.rerun()
 
@@ -136,9 +213,18 @@ def register_page():
 # LOGIN PAGE
 # ==========================
 def login_page():
+    
+
+    if st.session_state.get("logout_message", False):
+        st.success("Logged out successfully")
+        st.session_state.logout_message = False
+
+    if st.session_state.success_message:
+        st.success(st.session_state.success_message)
+        st.session_state.success_message = None   
 
     st.title("Login")
-
+    
     email = st.text_input("Email")
     password = st.text_input(
         "Password",
@@ -169,9 +255,9 @@ def login_page():
 
             st.session_state.token = data["token"]
             st.session_state.email = email
-            st.session_state.page = "dashboard"
+            st.session_state.success_message = "✅ Login successful! Let's make today productive."
 
-            st.success("Login successful")
+            st.session_state.page = "dashboard"
 
             st.rerun()
 
@@ -237,9 +323,9 @@ def add_task_page():
             )
 
             if response.status_code == 201:
-                st.success("Task created successfully")
-                st.session_state.page = "dashboard"
-                st.rerun()
+                        st.session_state.success_message = "Task created successfully"
+                        st.session_state.page = "dashboard"
+                        st.rerun()
             else:
                 st.error(response.text)
 
@@ -334,7 +420,7 @@ def view_task_page():
 
                                                     if response.status_code == 200:
 
-                                                                    st.success("Task deleted")
+                                                                    st.session_state.success_message = "Task deleted successfully"
 
                                                                     st.session_state.confirm_delete = False
                                                                     st.session_state.page = "dashboard"
@@ -362,6 +448,9 @@ def view_task_page():
 def dashboard_page():
 
     st.title("Task Dashboard")
+    if st.session_state.success_message:
+        st.success(st.session_state.success_message)
+        st.session_state.success_message = None
 
     st.sidebar.write(
         f"Logged in as: {st.session_state.email}"
@@ -380,12 +469,17 @@ def dashboard_page():
                                     "Are you sure you want to logout?"
                                     )
 
-                if st.sidebar.button(
-                                        "Yes, Logout"
-                                    ):
-                        st.session_state.clear()
-                        st.session_state.page = "login"
-                        st.rerun()
+                if st.sidebar.button("Yes, Logout"):
+
+                    st.session_state.token = None
+                    st.session_state.email = None
+                    st.session_state.selected_task_id = None
+                    st.session_state.confirm_logout = False
+
+                    st.session_state.logout_message = True
+                    st.session_state.page = "login"
+
+                    st.rerun()
 
                 if st.sidebar.button(
                                         "Cancel Logout"
@@ -433,13 +527,13 @@ def dashboard_page():
     with col_filter1:
         status_filter = st.selectbox(
         "Status",
-        ["", "pending", "in-progress", "done"]
+        ["All", "pending", "in-progress", "done"]
     )
 
     with col_filter2:
         priority_filter = st.selectbox(
         "Priority",
-        ["", "low", "medium", "high"]
+        ["All", "low", "medium", "high"]
     )
 
     tasks_response = api_call(
@@ -462,13 +556,13 @@ def dashboard_page():
                                                 task for task in tasks
                                                     if task["title"] == selected_task
                                             ]
-        if status_filter:
+        if status_filter != "All":
             tasks = [
                         t for t in tasks
                         if t["status"] == status_filter
                     ]
 
-        if priority_filter:
+        if priority_filter != "All":
             tasks = [
                         t for t in tasks
                         if t["priority"] == priority_filter
@@ -504,7 +598,7 @@ def dashboard_page():
 
              # VIEW
                 if col2.button(
-                                "View",
+                                "View Task",
                                 key=f"view_{task['id']}"
                                 ):
                     st.session_state.selected_task_id = task["id"]
@@ -513,7 +607,7 @@ def dashboard_page():
 
     # UPDATE
                 if col3.button(
-                                    "Update",
+                                    "Edit Task",
                                     key=f"update_{task['id']}"
                                 ):
                                         st.session_state.selected_task_id = task["id"]
@@ -537,7 +631,7 @@ def dashboard_page():
                                         )
 
                     if response.status_code == 200:
-                     st.success("Task marked as done")
+                     st.session_state.success_message = "Task marked as done"
                      st.rerun()
                     else:
                         st.error(response.text)
@@ -573,7 +667,7 @@ def dashboard_page():
                                                         )
 
                                     if response.status_code == 200:
-                                        st.success("Task deleted")
+                                        st.session_state.success_message = "Task deleted successfully"
                                         del st.session_state.delete_task_id
                                         st.rerun()
 
@@ -652,7 +746,9 @@ def edit_task_page():
                             )
 
     if st.button("Update Task"):
-
+        if not title.strip():
+            st.error("Title is required")
+            return
         response = api_call(
             "PUT",
             f"/tasks/{task['id']}",
@@ -668,7 +764,7 @@ def edit_task_page():
 
         if response.status_code == 200:
 
-            st.success("Task updated")
+            st.session_state.success_message = "Task updated successfully"
 
             st.session_state.page = "dashboard"
 
